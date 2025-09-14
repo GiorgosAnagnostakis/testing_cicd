@@ -1,25 +1,30 @@
-name: Build JAR
+name: Build and Upload JAR
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ main ]
   pull_request:
-    branches: [ dev ]
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout source code
         uses: actions/checkout@v3
 
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17' # or 11, depending on your project
+          java-version: '17'  # Change if you're using a different version
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: spring-boot-jar
+          path: target/*.jar
