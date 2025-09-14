@@ -1,4 +1,4 @@
-name: Build and Upload JAR
+name: Build, Upload, and Deploy JAR
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'  # Change to 11 or 21 if needed
+          java-version: '17'
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
@@ -28,3 +28,13 @@ jobs:
         with:
           name: spring-boot-jar
           path: target/*.jar
+
+      - name: Deploy to Windows via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.WINDOWS_HOST }}
+          username: ${{ secrets.WINDOWS_USER }}
+          key: ${{ secrets.WINDOWS_SSH_KEY }}
+          port: 22
+          source: "target/*.jar"
+          target: "C:/Users/${{ secrets.WINDOWS_USER }}/Desktop/jars"
